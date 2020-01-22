@@ -1,5 +1,6 @@
 import pygame as pg
 from pygame.locals import *
+from random import choice
 
 FPS = 60
 
@@ -7,6 +8,7 @@ FPS = 60
 class Racket(pg.sprite.Sprite):
     pictures = 'racket_horizontal.png'
     speed = 10
+    lives = 3
 
     def __init__(self, x=355, y=580):
         self.x = x
@@ -49,16 +51,38 @@ class Ball(pg.sprite.Sprite):
         self.rect.y = y
         self.w = self.rect.w
         self.h = self.rect.h
+        self.start()
+
+    def start(self):
+        self.rect.x = self.x
+        self.rect.y = self.y
+        self.speed = 5
+        self.dy = 1
+        self.dx = choice((-1,1))
+
 
     def update(self, dt):
         self.rect.x = self.rect.x + self.speed * self.dx
         self.rect.y = self.rect.y + self.speed * self.dy
         
-        if self.rect.y >= 600:
-            self.dy = self.dy * - 1 # Condicion de perdida de vida
+        if self.rect.y >= 600 - self.h:
+            # self.dy = self.dy * - 1 # Condicion de perdida de vida
+            # self.rect.x = self.x
+            # self.rect.y = self.y
+            # Condicion de perdida de vida
+            self.speed = 0
+            
             
         if self.rect.y <= 0:
             self.dy = self.dy * -1
             
-        if self.rect.x <= 0 or self.rect.x >= 800 -self.w:
+        if self.rect.x <= 0 or self.rect.x >= 800 - self.w:
             self.dx = self.dx * -1
+            
+    def test_collision(self, group):
+        # Compruebo si choco con los miembros de un grupo
+        candidatesToColision = pg.sprite.spritecollide(self, group, False)
+        if len(candidatesToColision) > 0:
+            print('Toque')
+            self.dy += -1
+        
