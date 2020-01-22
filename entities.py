@@ -4,11 +4,26 @@ from random import choice, randint
 
 FPS = 60
 
+'''
+level1 = ['-x-xxx-x',
+          'xxxxxxxx',
+          'xx-x-x-x'
+]
+
+class Map:
+    def __init__(self, strmap)
+        self.group = sprite.Group()
+
+        # <Toda la lógica de la creación de los Tiles, su posición y agruparlos>
+
+        # return self.group
+        pass
+'''
 
 class Racket(pg.sprite.Sprite):
     pictures = 'racket_horizontal.png'
     speed = 10
-    lives = 50
+    lives = 3
 
     def __init__(self, x=355, y=580):
         self.x = x
@@ -38,23 +53,22 @@ class Ball(pg.sprite.Sprite):
     dy = 1
     speed = 5
 
-    def __init__(self, x=400, y=535):
+    def __init__(self, x=400, y=300):
         self.x = x
         self.y = y
 
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.image.load(
-            'resources/{}'.format(self.pictures)).convert_alpha()
 
+        self.image = pg.image.load('resources/{}'.format(self.pictures)).convert_alpha()
+        
         # Carga de ficheros de audio
         self.bing = pg.mixer.Sound('resources/sounds/bing.wav')
-        self.lostPoint = pg.mixer.Sound('resources/sounds/lost-point.wav')
+        self.lost_point = pg.mixer.Sound('resources/sounds/lost-point.wav')
 
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
         self.w = self.rect.w
         self.h = self.rect.h
+
         self.start()
 
     def start(self):
@@ -74,11 +88,11 @@ class Ball(pg.sprite.Sprite):
             # self.rect.y = self.y
             # Condicion de perdida de vida
             self.speed = 0
-            self.lostPoint.play()
+            self.lost_point.play()
 
         if self.rect.y <= 0:
             self.dy = self.dy * -1
-            self.lostPoint.play()
+            self.lost_point.play()
 
         if self.rect.x <= 0 or self.rect.x >= 800 - self.w:
             self.dx = self.dx * -1
