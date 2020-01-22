@@ -4,6 +4,7 @@ import sys
 from entities import *
 
 FPS = 60
+WHITE = (255,255,255)
 
 
 class Game:
@@ -17,6 +18,10 @@ class Game:
 
         self.background_img = pg.image.load(
             'resources/background.png').convert()
+        self.font = pg.font.Font('resources/fonts/font.ttf', 22)
+        self.marcador = self.font.render('0', True, WHITE)
+        self.livesCounter = self.font.render('0', True, WHITE)
+
         # self.player = Racket(100,295) #Para enredar y comprobar en distinta posicion de Racket
         self.player = Racket()
         self.ball = Ball()
@@ -24,7 +29,7 @@ class Game:
         self.tileGroup = pg.sprite.Group()
         for j in range(5):
             for i in range(16):
-                t = Tile(i*50, 10+j*32)
+                t = Tile(i*50, 60+j*32)
                 self.tileGroup.add(t)
 
         self.playerGroup = pg.sprite.Group()
@@ -35,14 +40,17 @@ class Game:
         self.allSprites.add(self.tileGroup)
         self.score = 0
 
-    def gameOver(self):
+    def quitGame(self):
         pg.quit()
         sys.exit()
+        
+    def gameOver(self):
+        pass
 
     def handleEvents(self):
         for event in pg.event.get():
             if event.type == QUIT:
-                self.gameOver()
+                self.quitGame()
 
             if event.type == KEYDOWN:
                 if event.key == K_LEFT:
@@ -66,23 +74,30 @@ class Game:
 
             # Comprobar choques con Racket
             self.ball.test_collisions(self.playerGroup)
-            self.score += self.ball.test_collisions(self.tileGroup, True)
-            
+            self.score += self.ball.test_collisions(self.tileGroup, True)            
+
             print(self.score)
-                        
+
             if self.ball.speed == 0:  # Se produce colision
                 # Quitar vida a player
                 self.player.lives -= 1
                 # Inicio de una nueva bola, avisar a bola que vuelva al inicio (metodo)
-                self.ball.start()
+                self.ball.start()                
 
             if self.player.lives == 0:
-                self.gameOver()
+                self.quitGame()
+                
 
+            self.livesCounter = self.font.render(str(self.player.lives), True, WHITE)
+            self.marcador = self.font.render(str(self.score), True, WHITE)
+            
             self.screen.blit(self.background_img, (0, 0))
 
             self.allSprites.update(dt)
             self.allSprites.draw(self.screen)
+            
+            self.screen.blit(self.marcador, (750,10))
+            self.screen.blit(self.livesCounter, (50,10))
 
             pg.display.flip()
 

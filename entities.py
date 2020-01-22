@@ -8,7 +8,7 @@ FPS = 60
 class Racket(pg.sprite.Sprite):
     pictures = 'racket_horizontal.png'
     speed = 10
-    lives = 5
+    lives = 50
 
     def __init__(self, x=355, y=580):
         self.x = x
@@ -46,6 +46,10 @@ class Ball(pg.sprite.Sprite):
         self.image = pg.image.load(
             'resources/{}'.format(self.pictures)).convert_alpha()
 
+        # Carga de ficheros de audio
+        self.bing = pg.mixer.Sound('resources/sounds/bing.wav')
+        self.lostPoint = pg.mixer.Sound('resources/sounds/lost-point.wav')
+
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -70,24 +74,24 @@ class Ball(pg.sprite.Sprite):
             # self.rect.y = self.y
             # Condicion de perdida de vida
             self.speed = 0
+            self.lostPoint.play()
 
         if self.rect.y <= 0:
             self.dy = self.dy * -1
+            self.lostPoint.play()
 
         if self.rect.x <= 0 or self.rect.x >= 800 - self.w:
             self.dx = self.dx * -1
+            self.bing.play()
 
-
-    def test_collisions(self,group, borra=False):
-        candidatesToColisionTile = pg.sprite.spritecollide(self,group,borra)
+    def test_collisions(self, group, borra=False):
+        candidatesToColisionTile = pg.sprite.spritecollide(self, group, borra)
         nC = len(candidatesToColisionTile)
         if nC > 0:
-            self.dy *= -1 # cambio la y para provocar rebote
-            print(len(candidatesToColisionTile))
-            print('rebote ladrillo')
+            self.dy *= -1  # cambio la y para provocar rebote
+            print('rebote ladrillo ', len(candidatesToColisionTile))
+            self.bing.play()
         return nC
-            
-    
 
 
 class Tile(pg.sprite.Sprite):
@@ -106,8 +110,8 @@ class Tile(pg.sprite.Sprite):
         # pg.draw.rect(self.image, (randint(0,255), randint(0,255), randint(0,255)),[x,y,w,h])
         pg.draw.rect(self.image, (randint(0, 255), randint(
             0, 255), randint(0, 255)), [1, 1, self.w-4, self.h-4])
-        
-        #Lienzo principal
+
+        # Lienzo principal
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
