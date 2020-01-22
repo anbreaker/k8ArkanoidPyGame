@@ -8,7 +8,7 @@ FPS = 60
 class Racket(pg.sprite.Sprite):
     pictures = 'racket_horizontal.png'
     speed = 10
-    lives = 3
+    lives = 5
 
     def __init__(self, x=355, y=580):
         self.x = x
@@ -80,7 +80,7 @@ class Ball(pg.sprite.Sprite):
 
     def test_collisions(self,group, borra=False):
         candidatesToColisionTile = pg.sprite.spritecollide(self,group,borra)
-        nc = len(candidatesToColisionTile)
+        nC = len(candidatesToColisionTile)
         if nC > 0:
             self.dy *= -1 # cambio la y para provocar rebote
             print(len(candidatesToColisionTile))
