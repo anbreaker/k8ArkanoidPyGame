@@ -1,7 +1,6 @@
 import pygame as pg
 from pygame.locals import *
 import sys
-from random import randint
 from entities import *
 
 FPS = 60
@@ -9,6 +8,7 @@ FPS = 60
 
 class Game:
     clock = pg.time.Clock()
+    score = 0
 
     def __init__(self):
         # Tamaño pantalla
@@ -21,11 +21,19 @@ class Game:
         self.player = Racket()
         self.ball = Ball()
 
+        self.tileGroup = pg.sprite.Group()
+        for j in range(5):
+            for i in range(16):
+                t = Tile(i*50, 10+j*32)
+                self.tileGroup.add(t)
+
         self.playerGroup = pg.sprite.Group()
         self.allSprites = pg.sprite.Group()
         self.playerGroup.add(self.player)
         self.allSprites.add(self.player)
         self.allSprites.add(self.ball)
+        self.allSprites.add(self.tileGroup)
+        self.score = 0
 
     def gameOver(self):
         pg.quit()
@@ -57,7 +65,11 @@ class Game:
             self.handleEvents()
 
             # Comprobar choques con Racket
-            self.ball.test_collision(self.playerGroup)
+            self.ball.test_collisions(self.playerGroup)
+            self.score += self.ball.test_collisions(self.tileGroup, True)
+            
+            print(self.score)
+                        
             if self.ball.speed == 0:  # Se produce colision
                 # Quitar vida a player
                 self.player.lives -= 1
